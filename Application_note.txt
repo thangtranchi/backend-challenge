@@ -1,0 +1,18 @@
+1. Introduction:
+  - Server.java is source code for event handling server. There are 2 threads running on this server:
+		+> One thread always listens to event source , get the events and forward them to the correct clients based on the socketMapping
+		+> The other always listens to clients user, add and keep the socket connection to clients in the socketMapping  
+		
+To simulator the system, I created more EventSource and UserClient:		
+  - EventSource.java is source code for events source. It generates block of 4 events for each 2 seconds . By default , I set the number of block is 3.
+  - UserClient.java is source code for user client. There are 3 clients with id : 1,2,3 . After create socket connections to server, they wait for the 
+  forwarded event from server
+  
+2. Running the program:
+  - Download the app.jar file to the folder
+  
+  - Run the server only, without event source and user clients:
+      > java -jar app.jar serverOnly
+	  
+  - Run the server with simulation event source and user clients:
+      > java -jar app.jar
