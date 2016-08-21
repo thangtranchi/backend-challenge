@@ -1,4 +1,5 @@
 1. Introduction:
+  - Project uses JAVA 8
   - Server.java is source code for event handling server. There are 2 threads running on this server:
 		+> One thread always listens to event source , get the events and forward them to the correct clients based on the socketMapping
 		+> The other always listens to clients user, add and keep the socket connection to clients in the socketMapping  
@@ -9,10 +10,16 @@ To simulator the system, I created more EventSource and UserClient:
   forwarded event from server
   
 2. Running the program:
-  - Download the app.jar file to the folder
+  - Download the app.jar file and run it :
+
+		+> Run the server with simulation event source and user clients:
+			> java -jar app.jar
   
-  - Run the server only, without event source and user clients:
-      > java -jar app.jar serverOnly
-	  
-  - Run the server with simulation event source and user clients:
-      > java -jar app.jar
+		+> Run the server only, without event source and user clients:
+			> java -jar app.jar serverOnly
+			
+3. External library : 
+  - junit-4.11.jar
+  - hamcrest-all-1.3.jar 
+  for Unit Test
+	 

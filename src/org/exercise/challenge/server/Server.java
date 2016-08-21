@@ -16,9 +16,9 @@ import org.exercise.challenge.util.SocketConstant;
 
 public class Server implements Runnable {
 
-	private ServerSocket serverSocketToClientUser;
+	private ServerSocket socketConnectionToClientUser;
 
-	private ServerSocket serverSocketToEventSource;
+	private ServerSocket socketConnectionToEventSource;
 
 	private Map<Integer, Socket> socketMapping = new ConcurrentHashMap<Integer, Socket>();
 
@@ -27,20 +27,20 @@ public class Server implements Runnable {
 
 	@Override
 	public void run() {
-		listenToEventThread().start();
+		listenToEventSourceThread().start();
 		listenToClientsThread().start();
 	}
 
-	public Thread listenToEventThread() {
+	public Thread listenToEventSourceThread() {
 		return new Thread() {
 			public void run() {
 				Socket eventSourceSocket = null;
 				try {
-					serverSocketToEventSource = new ServerSocket(SocketConstant.EVENT_SOURCE_PORT);
+					socketConnectionToEventSource = new ServerSocket(SocketConstant.EVENT_SOURCE_PORT);
 					LOG.println("Server started and listening to the events source");
 
 					while (true) {
-						eventSourceSocket = serverSocketToEventSource.accept();
+						eventSourceSocket = socketConnectionToEventSource.accept();
 						BufferedReader bufferReader = createBufferReader(eventSourceSocket);
 						
 						String event;
@@ -50,12 +50,12 @@ public class Server implements Runnable {
 						}
 					}
 				} catch (Exception e) {
-					LOG.println("Can not create connection to events source!");
-					;
+					LOG.println("[ERROR] Can not create connection to events source!");
 				} finally {
 					try {
-						serverSocketToEventSource.close();
+						socketConnectionToEventSource.close();
 					} catch (Exception e) {
+						LOG.println("[ERROR] Can not close the connection to events source!");
 					}
 				}
 			}
@@ -66,19 +66,21 @@ public class Server implements Runnable {
 		return new Thread() {
 			public void run() {
 				try {
-					serverSocketToClientUser = new ServerSocket(SocketConstant.CLIENT_PORT);
+					socketConnectionToClientUser = new ServerSocket(SocketConstant.CLIENT_PORT);
 					while (true) {
-						Socket socketToClientUser = serverSocketToClientUser.accept();
+						Socket socketToClientUser = socketConnectionToClientUser.accept();
 						BufferedReader bufferReader = createBufferReader(socketToClientUser);
 						String userId = bufferReader.readLine();
 
 						if (userId != null) {
 							LOG.println("[INFO] New socket connection between server and client %s was created", userId);
+							
+							//Keep socket in a map and reuse it when server have to sends event
 							socketMapping.put(Integer.parseInt(userId), socketToClientUser);
 						}
 					}
 				} catch (Exception e) {
-					LOG.println("Can not create connection to client!");
+					LOG.println("[ERROR] Can not create connection to client!");
 				}
 			}
 		};
@@ -86,6 +88,8 @@ public class Server implements Runnable {
 
 	private void forwardEventToCorrespondingClient(String event) throws IOException {
 		Integer userId = CommonUtil.extractUserId(event);
+		
+		//Find corresponding socket connection in socketMap and send event to it
 		if (userId != null && socketMapping.containsKey(userId)) {
 			new PrintWriter(socketMapping.get(userId).getOutputStream(), true).println(event);
 		} else {

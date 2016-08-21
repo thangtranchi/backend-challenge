@@ -33,7 +33,7 @@ public class UserClient implements Runnable {
 				LOG.println("User " + userId + " received event : " + message);
 			}
 		} catch (IOException exception) {
-			LOG.println("Could not create connection to server");
+			LOG.println("[ERROR] Could not create connection to server");
 		}
 	}
 
