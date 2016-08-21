@@ -34,7 +34,6 @@ public class AppTest {
 		socketClient_1.close();
 		socketClient_2.close();
 		socketClient_3.close();
-		// App sockets closed by shutdown hook
 	}
 
 	@Test
@@ -59,7 +58,6 @@ public class AppTest {
 
 		String eventReceivedInClient2 = readEvent(socketClient_2);
 		assertEquals(eventReceivedInClient2, "2|Interview|HIGH_PRIORITY|new java candidate");
-
 	}
 
 	private String readEvent(Socket socket) throws IOException {
