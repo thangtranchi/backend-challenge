@@ -18,33 +18,41 @@ public class EventSource implements Runnable {
 		int i = 0;
 		try {
 			socket = new Socket(SocketConstant.HOST, SocketConstant.EVENT_SOURCE_PORT);
-			LOG.println("[INFO] Start the simulation of event handling system!");
-			LOG.println("[INFO] Event source will send "+NUMBER_BLOCK+" blocks of events to server, each block has "
-					+NUMBER_EVENT+" random events");
+			logIntro();
 			while (i < NUMBER_BLOCK) {
 				String eventRows = RandomGenerateUtil.createRandomEventData(NUMBER_EVENT);
 				waiting(3000);
 				new PrintWriter(socket.getOutputStream(), true).println(eventRows);
 				i++;
-				logToConsole(eventRows, i);
+				logEventDescription(eventRows, i);
 			}
 			waiting(3000);
-			LOG.println("--------------------------------------------------------------");
-			LOG.println("[INFO] Finish the simulation of event handling system!");
+			logFinishSimulation();
 		} catch (Exception exception) {
 			exception.printStackTrace();
 		}
 	}
 
-	private void logToConsole(String eventRows, Integer i) {
+	private void logFinishSimulation() {
 		LOG.println("--------------------------------------------------------------");
-		LOG.println("[INFO]New events (block %s) sent from Source:", i.toString());
+		LOG.println("[INFO] Finish the simulation of event handling system!");
+	}
+
+	private void logIntro() {
+		LOG.println("[INFO] Start the simulation of event handling system!");
+		LOG.println("[INFO] Event source will send "+NUMBER_BLOCK+" blocks of events to server, each block has "
+				+NUMBER_EVENT+" random events");
+	}
+
+	private void logEventDescription(String eventRows, Integer i) {
+		LOG.println("--------------------------------------------------------------");
+		LOG.println("[INFO] New events (block %s) sent from Source:", i.toString());
 		LOG.println("- - - - - - - - - - - - - - - - - ");
 		LOG.println("UserId|Event name|Type|Description");
 		LOG.println("- - - - - - - - - - - - - - - - - ");
 		LOG.println(eventRows);
 		LOG.println("");
-		LOG.println("[INFO]Forwarding to clients");
+		LOG.println("[INFO] Forwarding to clients >>>");
 	}
 
 	private void waiting(int milisecond) {
